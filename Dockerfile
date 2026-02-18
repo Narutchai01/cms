@@ -47,6 +47,11 @@ COPY --chown=cmsuser:cmsuser . /home/cmsuser/cms
 
 RUN sudo pip3 install --break-system-packages .
 
+RUN sudo apt-get update
+RUN sudo apt-get install build-essential libcap-dev
+
+RUN git submodule update --init --recursive
+
 RUN sudo python3 prerequisites.py --yes --cmsuser=cmsuser install
 
 RUN sudo sed 's|/cmsuser:your_password_here@localhost:5432/cmsdb"|/postgres@testdb:5432/cmsdbfortesting"|' ./config/cms.conf.sample \

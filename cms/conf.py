@@ -124,8 +124,8 @@ class Config:
         self.tornado_debug = False
 
         # ContestWebServer.
-        self.contest_listen_address = [""]
-        self.contest_listen_port = [8888]
+        self.contest_listen_address = ["", ""]
+        self.contest_listen_port = [8888, 8890]
         self.cookie_duration = 30 * 60  # 30 minutes
         self.submit_local_copy = True
         self.submit_local_copy_path = "%s/submissions/"

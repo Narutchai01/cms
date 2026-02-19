@@ -40,7 +40,7 @@
                                ["localhost", 26013],
                                ["localhost", 26014],
                                ["localhost", 26015]],
-        "ContestWebServer":   [["localhost", 21000]],
+        "ContestWebServer":   [["localhost", 21000],["localhost",21001]],
         "AdminWebServer":     [["localhost", 21100]],
         "ProxyService":       [["localhost", 28600]],
         "PrintingService":    [["localhost", 25123]],

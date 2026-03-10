@@ -69,6 +69,9 @@ class TaskDescriptionHandler(ContestHandler):
 class TaskStatementViewHandler(FileHandler):
     """Shows the statement file of a task in the contest.
 
+    Serves HTML statements inline (no Content-Disposition) and
+    PDF statements as attachment downloads.
+
     """
     @tornado_web.authenticated
     @actual_phase_required(0, 3)
@@ -81,15 +84,27 @@ class TaskStatementViewHandler(FileHandler):
         if lang_code not in task.statements:
             raise tornado_web.HTTPError(404)
 
-        statement = task.statements[lang_code].digest
+        digest = task.statements[lang_code].digest
         self.sql_session.close()
 
-        if len(lang_code) > 0:
-            filename = "%s (%s).pdf" % (task.name, lang_code)
-        else:
-            filename = "%s.pdf" % task.name
+        # Detect whether the stored file is HTML by reading its first bytes.
+        try:
+            content = self.service.file_cacher.get_file_content(digest)
+        except Exception:
+            raise tornado_web.HTTPError(404)
 
-        self.fetch(statement, "application/pdf", filename)
+        is_html = content[:500].strip().lower().startswith((b"<", b"<!doctype"))
+
+        if is_html:
+            # Serve inline as HTML (no filename → no Content-Disposition).
+            self.fetch(digest, "text/html")
+        else:
+            # Legacy PDF: serve as attachment download.
+            if len(lang_code) > 0:
+                filename = "%s (%s).pdf" % (task.name, lang_code)
+            else:
+                filename = "%s.pdf" % task.name
+            self.fetch(digest, "application/pdf", filename)
 
 
 class TaskAttachmentViewHandler(FileHandler):

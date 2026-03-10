@@ -131,12 +131,13 @@ class TpsTaskLoader(TaskLoader):
                 statements = [
                     filename
                     for filename in os.listdir(statements_dir)
-                    if filename[-4:] == ".pdf"]
+                    if filename.endswith(".pdf") or filename.endswith(".html")
+                ]
                 if len(statements) > 0:
                     args['statements'] = dict()
                     logger.info('Statements found')
                 for statement in statements:
-                    language = statement[:-4]
+                    language = os.path.splitext(statement)[0]
                     if language == "en_US":
                         args["primary_statements"] = ["en_US"]
                     digest = self.file_cacher.put_file_from_path(

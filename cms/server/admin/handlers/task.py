@@ -245,11 +245,14 @@ class AddStatementHandler(BaseHandler):
             self.redirect(fallback_page)
             return
         statement = self.request.files["statement"][0]
-        if not statement["filename"].endswith(".pdf"):
+        if not statement["filename"].endswith(".pdf") and not statement[
+            "filename"
+        ].endswith(".html"):
             self.service.add_notification(
                 make_datetime(),
                 "Invalid task statement",
-                "The task statement must be a .pdf file.")
+                "The task statement must be a .pdf or .html file.",
+            )
             self.redirect(fallback_page)
             return
         task_name = task.name

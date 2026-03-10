@@ -25,7 +25,7 @@
 <div class="row statement one_statement">
     <div class="span9">
     {% for lang_code in task.statements %}
-        <a href="{{ contest_url("tasks", task.name, "statements", lang_code) }}" class="btn btn-large btn-success">{% trans %}Download task statement{% endtrans %}</a>
+        <iframe src="{{ contest_url("tasks", task.name, "statements", lang_code) }}" sandbox="allow-scripts allow-same-origin" style="width: 100%; height: 80vh; border: 1px solid #ddd; border-radius: 4px;"></iframe>
     {% endfor %}
     </div>
 </div>
@@ -39,26 +39,28 @@
         </p>
     {% for statement in task.statements.values()|sort(attribute="language") %}
         {% if statement.language in task.primary_statements %}
-        <a href="{{ contest_url("tasks", task.name, "statements", statement.language) }}" class="btn btn-large btn-success">
+        <div class="statement-embed" style="margin-bottom: 16px;">
             {% set language_name = statement.language|format_locale %}
             {% if statement.language != language_name %}
-                {% trans lang=language_name %}Statement in <b>{{ lang }}</b>{% endtrans %}
+                <h4>{% trans lang=language_name %}Statement in <b>{{ lang }}</b>{% endtrans %}</h4>
             {% else %}
-                {% trans lang=language_name %}Statement in {{ lang }}{% endtrans %}
+                <h4>{% trans lang=language_name %}Statement in {{ lang }}{% endtrans %}</h4>
             {% endif %}
-        </a>
+            <iframe src="{{ contest_url("tasks", task.name, "statements", statement.language) }}" sandbox="allow-scripts allow-same-origin" style="width: 100%; height: 80vh; border: 1px solid #ddd; border-radius: 4px;"></iframe>
+        </div>
         {% endif %}
     {% endfor %}
     {% for statement in task.statements.values()|sort(attribute="language") %}
         {% if statement.language in participation.user.preferred_languages and statement.language not in task.primary_statements %}
-        <a href="{{ contest_url("tasks", task.name, "statements", statement.language) }}" class="btn btn-large">
+        <div class="statement-embed" style="margin-bottom: 16px;">
             {% set language_name = statement.language|format_locale %}
             {% if statement.language != language_name %}
-                {% trans lang=language_name %}Statement in <b>{{ lang }}</b>{% endtrans %}
+                <h4>{% trans lang=language_name %}Statement in <b>{{ lang }}</b>{% endtrans %}</h4>
             {% else %}
-                {% trans lang=language_name %}Statement in {{ lang }}{% endtrans %}
+                <h4>{% trans lang=language_name %}Statement in {{ lang }}{% endtrans %}</h4>
             {% endif %}
-        </a>
+            <iframe src="{{ contest_url("tasks", task.name, "statements", statement.language) }}" sandbox="allow-scripts allow-same-origin" style="width: 100%; height: 80vh; border: 1px solid #ddd; border-radius: 4px;"></iframe>
+        </div>
         {% endif %}
     {% endfor %}
     </div>

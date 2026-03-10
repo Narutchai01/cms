@@ -412,14 +412,22 @@ class YamlLoader(ContestLoader, TaskLoader, UserLoader, TeamLoader):
                 logger.critical("Statement folder not found.")
                 sys.exit(1)
 
+            # Look for statement file: prefer .html, fall back to .pdf
             single_statement_path = os.path.join(
-                self.path, statement, "%s.pdf" % statement)
+                self.path, statement, "%s.html" % statement
+            )
+            if not os.path.exists(single_statement_path):
+                single_statement_path = os.path.join(
+                    self.path, statement, "%s.pdf" % statement
+                )
             if not os.path.exists(single_statement_path):
                 single_statement_path = None
 
             multi_statement_paths = {}
             for lang, lang_code in LANGUAGE_MAP.items():
-                path = os.path.join(self.path, statement, "%s.pdf" % lang)
+                path = os.path.join(self.path, statement, "%s.html" % lang)
+                if not os.path.exists(path):
+                    path = os.path.join(self.path, statement, "%s.pdf" % lang)
                 if os.path.exists(path):
                     multi_statement_paths[lang_code] = path
 
@@ -877,11 +885,14 @@ class YamlLoader(ContestLoader, TaskLoader, UserLoader, TeamLoader):
         files.append(os.path.join(self.path, "gen", "GEN"))
 
         # Statement
-        files.append(os.path.join(self.path, "statement", "statement.pdf"))
-        files.append(os.path.join(self.path, "testo", "testo.pdf"))
-        for lang in LANGUAGE_MAP:
-            files.append(os.path.join(self.path, "statement", "%s.pdf" % lang))
-            files.append(os.path.join(self.path, "testo", "%s.pdf" % lang))
+        for ext in ["pdf", "html"]:
+            files.append(os.path.join(self.path, "statement", "statement.%s" % ext))
+            files.append(os.path.join(self.path, "testo", "testo.%s" % ext))
+            for lang in LANGUAGE_MAP:
+                files.append(
+                    os.path.join(self.path, "statement", "%s.%s" % (lang, ext))
+                )
+                files.append(os.path.join(self.path, "testo", "%s.%s" % (lang, ext)))
 
         # Managers
         files.append(os.path.join(self.path, "check", "checker"))

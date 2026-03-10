@@ -42,8 +42,8 @@ def add_statement(task_name, language_code, statement_file, overwrite):
         logger.error("Statement file (path: %s) does not exist.",
                      statement_file)
         return False
-    if not statement_file.endswith(".pdf"):
-        logger.error("Statement file should be a pdf file.")
+    if not statement_file.endswith(".pdf") and not statement_file.endswith(".html"):
+        logger.error("Statement file should be a .pdf or .html file.")
         return False
 
     with SessionGen() as session:

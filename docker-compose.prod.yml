@@ -1,0 +1,39 @@
+services:
+  devdb:
+    image: postgres:15
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - "cms-prod-data:/var/lib/postgresql/data"
+    restart: unless-stopped
+
+  prodcms:
+    build: .
+    depends_on:
+      - "devdb"
+    environment:
+      CMS_CONFIG: /usr/local/etc/cms-devdb.conf
+    privileged: true
+    cgroup: host
+    ports:
+      - "8888:8888"
+      - "8889:8889"
+    restart: unless-stopped
+    command: >
+      bash -c "
+      wait-for-it devdb:5432 && 
+      if ! psql -h devdb -U postgres -lqt | cut -d \\| -f 1 | grep -qw cmsdb; then
+        echo 'Initializing DB...';
+        createdb -h devdb -U postgres cmsdb && cmsInitDB && cmsAddAdmin admin;
+      fi &&
+      cmsLogService 0 &
+      cmsAdminWebServer 0 &
+      cmsWorker 0 & 
+      cmsEvaluationService 0 & 
+      cmsScoringService 0 & 
+      cmsContestWebServer 0 & 
+      wait -n
+      "
+
+volumes:
+  cms-prod-data:

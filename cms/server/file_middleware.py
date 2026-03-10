@@ -45,6 +45,7 @@ class FileServerMiddleware:
 
     DIGEST_HEADER = "X-CMS-File-Digest"
     FILENAME_HEADER = "X-CMS-File-Filename"
+    INLINE_HEADER = "X-Sendfile-Inline"
 
     def __init__(self, file_cacher, app):
         """Create an instance.
@@ -83,6 +84,8 @@ class FileServerMiddleware:
 
         digest = original_response.headers.pop(self.DIGEST_HEADER)
         filename = original_response.headers.pop(self.FILENAME_HEADER, None)
+        inline_val = original_response.headers.pop(self.INLINE_HEADER, None)
+        inline = inline_val == "yes"
         mimetype = original_response.mimetype
 
         try:
@@ -100,8 +103,9 @@ class FileServerMiddleware:
         response.status_code = 200
         response.mimetype = mimetype
         if filename is not None:
+            disposition = "inline" if inline else "attachment"
             response.headers.add(
-                "Content-Disposition", "attachment", filename=filename)
+                "Content-Disposition", disposition, filename=filename)
         response.set_etag(digest)
         response.cache_control.no_cache = True
         response.cache_control.private = True

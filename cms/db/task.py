@@ -305,6 +305,12 @@ class Statement(Base):
         Digest,
         nullable=False)
 
+    # Format of the statement (e.g. "pdf" or "html")
+    format = Column(
+        String,
+        nullable=False,
+        default="pdf")
+
 
 class Attachment(Base):
     """Class to store additional files to give to the user together

@@ -47,7 +47,7 @@
         "PrometheusExporter": [],
         "TelegramBot":        []
     },
-
+    "rankings": ["http://usern4me:passw0rd@localhost:8891/"],
     "other_services":
     {
         "TestFileCacher":    [["localhost", 27501]]

@@ -109,14 +109,25 @@ class PolygonTaskLoader(TaskLoader):
             args["statements"] = {}
             args["primary_statements"] = []
             for language, lang in LANGUAGE_MAP.items():
-                path = os.path.join(self.path, 'statements',
-                                    '.pdf', language, 'problem.pdf')
-                if os.path.exists(path):
+                pdf_path = os.path.join(self.path, 'statements',
+                                        '.pdf', language, 'problem.pdf')
+                html_path = os.path.join(self.path, 'statements',
+                                         '.html', language, 'problem.html')
+                
+                path = None
+                stmt_format = "pdf"
+                if os.path.exists(pdf_path):
+                    path = pdf_path
+                elif os.path.exists(html_path):
+                    path = html_path
+                    stmt_format = "html"
+                
+                if path:
                     digest = self.file_cacher.put_file_from_path(
                         path,
                         "Statement for task %s (lang: %s)" % (name,
                                                               language))
-                    args["statements"][lang] = Statement(lang, digest)
+                    args["statements"][lang] = Statement(lang, digest, format=stmt_format)
                     args["primary_statements"].append(lang)
 
         args["submission_format"] = ["%s.%%l" % name]

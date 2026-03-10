@@ -245,13 +245,17 @@ class AddStatementHandler(BaseHandler):
             self.redirect(fallback_page)
             return
         statement = self.request.files["statement"][0]
-        if not statement["filename"].endswith(".pdf"):
+        is_pdf = statement["filename"].endswith(".pdf")
+        is_html = statement["filename"].endswith(".html")
+        if not is_pdf and not is_html:
             self.service.add_notification(
                 make_datetime(),
                 "Invalid task statement",
-                "The task statement must be a .pdf file.")
+                "The task statement must be a .pdf or .html file.")
             self.redirect(fallback_page)
             return
+            
+        stmt_format = "pdf" if is_pdf else "html"
         task_name = task.name
         self.sql_session.close()
 
@@ -274,8 +278,8 @@ class AddStatementHandler(BaseHandler):
         task = self.safe_get_item(Task, task_id)
         self.contest = task.contest
 
-        statement = Statement(language, digest, task=task)
-        self.sql_session.add(statement)
+        statement_obj = Statement(language, digest, format=stmt_format, task=task)
+        self.sql_session.add(statement_obj)
 
         if self.try_commit():
             self.redirect(self.url("task", task_id))

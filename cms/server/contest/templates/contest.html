@@ -42,7 +42,21 @@ $(document).ready(function () {
 });
     {% endif %}
 
-{% block additional_js %}{% endblock additional_js %}
+{% block additional_js %}
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+var mathjaxScript = document.createElement('script');
+mathjaxScript.id = 'MathJax-script';
+mathjaxScript.async = true;
+mathjaxScript.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+document.head.appendChild(mathjaxScript);
+{% endblock additional_js %}
     </script>
 {% endblock js %}
 

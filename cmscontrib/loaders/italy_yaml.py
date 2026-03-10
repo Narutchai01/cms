@@ -415,13 +415,19 @@ class YamlLoader(ContestLoader, TaskLoader, UserLoader, TeamLoader):
             single_statement_path = os.path.join(
                 self.path, statement, "%s.pdf" % statement)
             if not os.path.exists(single_statement_path):
-                single_statement_path = None
+                single_statement_path = os.path.join(
+                    self.path, statement, "%s.html" % statement)
+                if not os.path.exists(single_statement_path):
+                    single_statement_path = None
 
             multi_statement_paths = {}
             for lang, lang_code in LANGUAGE_MAP.items():
-                path = os.path.join(self.path, statement, "%s.pdf" % lang)
-                if os.path.exists(path):
-                    multi_statement_paths[lang_code] = path
+                pdf_path = os.path.join(self.path, statement, "%s.pdf" % lang)
+                html_path = os.path.join(self.path, statement, "%s.html" % lang)
+                if os.path.exists(pdf_path):
+                    multi_statement_paths[lang_code] = pdf_path
+                elif os.path.exists(html_path):
+                    multi_statement_paths[lang_code] = html_path
 
             if len(multi_statement_paths) > 0:
                 # Ensure that either a statement.pdf or testo.pdf is specified,
@@ -449,11 +455,13 @@ class YamlLoader(ContestLoader, TaskLoader, UserLoader, TeamLoader):
 
             args["statements"] = dict()
             for lang_code, statement_path in statements_to_import.items():
+                is_pdf = statement_path.endswith(".pdf")
+                stmt_format = "pdf" if is_pdf else "html"
                 digest = self.file_cacher.put_file_from_path(
                     statement_path,
                     "Statement for task %s (lang: %s)" % (name, lang_code),
                 )
-                args["statements"][lang_code] = Statement(lang_code, digest)
+                args["statements"][lang_code] = Statement(lang_code, digest, format=stmt_format)
 
             args["primary_statements"] = [primary_language]
 

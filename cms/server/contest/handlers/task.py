@@ -81,15 +81,19 @@ class TaskStatementViewHandler(FileHandler):
         if lang_code not in task.statements:
             raise tornado_web.HTTPError(404)
 
-        statement = task.statements[lang_code].digest
+        stmt = task.statements[lang_code]
+        statement_digest = stmt.digest
         self.sql_session.close()
 
-        if len(lang_code) > 0:
-            filename = "%s (%s).pdf" % (task.name, lang_code)
-        else:
-            filename = "%s.pdf" % task.name
+        inline = self.get_argument("inline", "0") == "1"
 
-        self.fetch(statement, "application/pdf", filename)
+        if len(lang_code) > 0:
+            filename = "%s (%s).%s" % (task.name, lang_code, stmt.format)
+        else:
+            filename = "%s.%s" % (task.name, stmt.format)
+
+        mimetype = "text/html" if stmt.format == "html" else "application/pdf"
+        self.fetch(statement_digest, mimetype, filename, inline=inline)
 
 
 class TaskAttachmentViewHandler(FileHandler):

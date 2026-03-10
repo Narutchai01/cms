@@ -42,9 +42,14 @@ def add_statement(task_name, language_code, statement_file, overwrite):
         logger.error("Statement file (path: %s) does not exist.",
                      statement_file)
         return False
-    if not statement_file.endswith(".pdf"):
-        logger.error("Statement file should be a pdf file.")
+    
+    is_pdf = statement_file.endswith(".pdf")
+    is_html = statement_file.endswith(".html")
+    if not is_pdf and not is_html:
+        logger.error("Statement file should be a .pdf or .html file.")
         return False
+        
+    stmt_format = "pdf" if is_pdf else "html"
 
     with SessionGen() as session:
         task = session.query(Task)\
@@ -73,7 +78,7 @@ def add_statement(task_name, language_code, statement_file, overwrite):
                 logger.error("A statement with given language already exists. "
                              "Not overwriting.")
                 return False
-        statement = Statement(language_code, digest, task=task)
+        statement = Statement(language_code, digest, format=stmt_format, task=task)
         session.add(statement)
         session.commit()
 

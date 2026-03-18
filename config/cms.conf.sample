@@ -40,14 +40,13 @@
                                ["localhost", 26013],
                                ["localhost", 26014],
                                ["localhost", 26015]],
-        "ContestWebServer":   [["localhost", 21000],["localhost",21001]],
+        "ContestWebServer":   [["localhost", 21000]],
         "AdminWebServer":     [["localhost", 21100]],
         "ProxyService":       [["localhost", 28600]],
         "PrintingService":    [["localhost", 25123]],
         "PrometheusExporter": [],
         "TelegramBot":        []
     },
-    "rankings": ["http://usern4me:passw0rd@localhost:8891/"],
     "other_services":
     {
         "TestFileCacher":    [["localhost", 27501]]
@@ -106,7 +105,7 @@
     "_help": "as a load balancer) running on the same host you could put",
     "_help": "127.0.0.1 here for additional security.",
     "contest_listen_address": ["",""],
-    "contest_listen_port":    [8888,8890],
+    "contest_listen_port":    [8888],
 
     "_help": "Login cookie duration in seconds. The duration is refreshed",
     "_help": "on every manual request.",

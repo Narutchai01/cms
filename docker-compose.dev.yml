@@ -5,6 +5,8 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - "./.dev/postgres-data:/var/lib/postgresql/data"
+    networks:
+      - cms-network
 
   devcms:
     build: .
@@ -26,8 +28,11 @@ services:
       - 8891:8891
     networks:
       - gateway-nginx
+      - cms-network
 
 
 networks:
-  gateway-nginx:
-    external: true
+    cms-network:
+      driver: bridge
+    gateway-nginx:
+      external: true
